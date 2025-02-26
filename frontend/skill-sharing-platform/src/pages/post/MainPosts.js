@@ -46,7 +46,7 @@ const MainPosts = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/posts");
+        const response = await axios.get("https://platform-backend-zxgy.onrender.com/api/posts");
         if (response.status === 200) {
           // Filter approved posts only
           const approvedPosts = response.data.filter(
@@ -82,7 +82,7 @@ const MainPosts = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.put(
-        `http://localhost:5000/api/posts/${id}/like`,
+        `https://platform-backend-zxgy.onrender.com/api/posts/${id}/like`,
         {},
         token ? { headers: { Authorization: `Bearer ${token}` } } : {}
       );
