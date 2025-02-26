@@ -55,7 +55,7 @@ const Profile = () => {
   const fetchPosts = async () => {
     try {
       const token = localStorage.getItem("token");
-      const postsResponse = await axios.get("http://localhost:5000/api/user/posts", {
+      const postsResponse = await axios.get("https://platform-backend-zxgy.onrender.com/api/user/posts", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -88,7 +88,7 @@ const Profile = () => {
       }
 
       try {
-        const userResponse = await axios.get("http://localhost:5000/api/user", {
+        const userResponse = await axios.get("https://platform-backend-zxgy.onrender.com/api/user", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -126,7 +126,7 @@ const Profile = () => {
       }));
 
       // Сервер лүү устгах хүсэлт илгээх
-      await axios.delete(`http://localhost:5000/api/posts/${postId}`, {
+      await axios.delete(`https://platform-backend-zxgy.onrender.com/api/posts/${postId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
