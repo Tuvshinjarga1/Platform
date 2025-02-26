@@ -1,13 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/post');
+    }
+  }, [navigate]);
 
   const handleRegister = async (e) => {
     e.preventDefault();

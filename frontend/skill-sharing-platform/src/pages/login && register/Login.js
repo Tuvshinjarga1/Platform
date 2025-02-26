@@ -1,10 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export function Login() {
   const navigate = useNavigate();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/post');
+    }
+  }, [navigate]);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
