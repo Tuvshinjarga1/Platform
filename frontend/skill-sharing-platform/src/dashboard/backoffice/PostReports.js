@@ -34,7 +34,7 @@ const PostReports = () => {
           return;
         }
 
-        const response = await axios.get('https://platform-backend-zxgy.onrender.com/api/backoffice/reports', {
+        const response = await axios.get('http://localhost:5000/api/backoffice/reports', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setReports(response.data);
@@ -50,7 +50,7 @@ const PostReports = () => {
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://platform-backend-zxgy.onrender.com/api/posts/${id}`, {
+      await axios.delete(`http://localhost:5000/api/posts/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert('Post deleted successfully!');
@@ -80,33 +80,33 @@ const PostReports = () => {
       location={{ pathname: window.location.pathname }}
     >
       <PageContainer>
-        <Typography.Title level={4} style={{ textAlign: 'center', marginBottom: 24, color: '#007bff', fontWeight: 'bold' }}>
+        <Typography.Title level={4} className="text-center mb-6 text-blue-500 font-bold">
           Reported Posts
         </Typography.Title>
 
         {reports.length === 0 ? (
-          <Alert message="No reported posts to display." type="info" showIcon style={{ textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold' }} />
+          <Alert message="No reported posts to display." type="info" showIcon className="text-center text-lg font-bold" />
         ) : (
-          <Row gutter={16}>
+          <Row gutter={[16, 16]}>
             {reports.map((report) => (
-              <Col span={8} key={report.post._id}>
+              <Col xs={24} sm={12} md={8} lg={6} key={report.post._id}>
                 <Card
                   hoverable
-                  cover={report.post.image && <img alt={report.post.title} src={report.post.image} style={{ height: 200, objectFit: 'cover' }} />}
+                  cover={report.post.image && <img alt={report.post.title} src={report.post.image} className="h-48 object-cover" />}
                 >
                   <Card.Meta
                     title={report.post.title}
                     description={
                       <div>
-                        <div dangerouslySetInnerHTML={{ __html: report.post.description ? report.post.description : '' }} style={{ height: 60, overflow: 'hidden', textOverflow: 'ellipsis' }} />
+                        <div dangerouslySetInnerHTML={{ __html: report.post.description ? report.post.description : '' }} className="h-16 overflow-hidden text-ellipsis" />
                         <Typography.Text type="secondary">Created by: {report.post.createdBy?.username || 'Unknown'}</Typography.Text><br></br>
                         <Typography.Text type="secondary">Reported by: {report.user} - {report.reason}</Typography.Text>
                       </div>
                     }
                   />
-                  <Tag color="red" style={{ marginTop: 16 }}>Reported</Tag>
-                  <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
-                    <Button type="danger" onClick={() => handleDelete(report.post._id)} style={{ backgroundColor: 'red', color: 'white' }}>Delete</Button>
+                  <Tag color="red" className="mt-4">Reported</Tag>
+                  <div className="flex justify-center mt-4">
+                    <Button type="danger" onClick={() => handleDelete(report.post._id)} className="bg-red-500 text-white">Delete</Button>
                   </div>
                 </Card>
               </Col>
