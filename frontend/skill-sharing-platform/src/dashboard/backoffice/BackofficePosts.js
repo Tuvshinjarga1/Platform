@@ -38,7 +38,7 @@ const BackofficePosts = () => {
           return;
         }
 
-        const response = await axios.get('https://platform-backend-zxgy.onrender.com/api/backoffice/posts', {
+        const response = await axios.get('http://localhost:5000/api/backoffice/posts', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setPosts(response.data);
@@ -55,7 +55,7 @@ const BackofficePosts = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `https://platform-backend-zxgy.onrender.com/api/backoffice/posts/${id}/approve`,
+        `http://localhost:5000/api/backoffice/posts/${id}/approve`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -71,7 +71,7 @@ const BackofficePosts = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `https://platform-backend-zxgy.onrender.com/api/backoffice/posts/${id}/reject`,
+        `http://localhost:5000/api/backoffice/posts/${id}/reject`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -86,7 +86,7 @@ const BackofficePosts = () => {
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://platform-backend-zxgy.onrender.com/api/posts/${id}`, {
+      await axios.delete(`http://localhost:5000/api/posts/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert('Post deleted successfully!');
@@ -118,7 +118,7 @@ const BackofficePosts = () => {
       location={{ pathname: window.location.pathname }}
     >
       <PageContainer>
-        <Typography.Title level={4} style={{ textAlign: 'center', marginBottom: 24, color: '#007bff', fontWeight: 'bold' }}>
+        <Typography.Title level={4} className="text-center mb-6 text-blue-500 font-bold">
           Posts
         </Typography.Title>
 
@@ -128,37 +128,37 @@ const BackofficePosts = () => {
         </Tabs>
 
         {filteredPosts.length === 0 ? (
-          <Alert message={`No ${filter} posts to display.`} type="info" showIcon style={{ textAlign: 'center', fontSize: '1.2rem', fontWeight: 'bold' }} />
+          <Alert message={`No ${filter} posts to display.`} type="info" showIcon className="text-center text-lg font-bold" />
         ) : (
-          <Row gutter={16}>
+          <Row gutter={[16, 16]}>
             {filteredPosts.map((post) => (
-              <Col span={8} key={post._id}>
+              <Col xs={24} sm={12} md={8} lg={6} key={post._id}>
                 <Card
                   hoverable
-                  cover={post.image && <img alt={post.title} src={post.image} style={{ height: 200, objectFit: 'cover' }} />}
+                  cover={post.image && <img alt={post.title} src={post.image} className="h-48 object-cover" />}
                   onClick={() => navigate(`/request/${post._id}`)}
                 >
                   <Card.Meta
                     title={post.title}
                     description={
                       <div>
-                        <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.description) }} style={{ height: 60, overflow: 'hidden', textOverflow: 'ellipsis' }} />
+                        <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.description) }} className="h-16 overflow-hidden text-ellipsis" />
                         <Typography.Text type="secondary">Created by: {post.createdBy?.username || 'Unknown'}</Typography.Text>
                       </div>
                     }
                   />
-                  <Tag color={post.status === 'pending' ? 'orange' : 'red'} style={{ marginTop: 16 }}>
+                  <Tag color={post.status === 'pending' ? 'orange' : 'red'} className="mt-4">
                     {post.status.charAt(0).toUpperCase() + post.status.slice(1)}
                   </Tag>
                   {filter === 'pending' && (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
+                    <div className="flex justify-between mt-4">
                       <Button type="primary" onClick={(e) => { e.stopPropagation(); handleApprove(post._id); }}>Approve</Button>
-                      <Button type="primary" color='red' onClick={(e) => { e.stopPropagation(); handleReject(post._id); }} style={{ backgroundColor: 'red', color: 'white' }}>Reject</Button>
+                      <Button type="primary" onClick={(e) => { e.stopPropagation(); handleReject(post._id); }} className="bg-red-500 text-white">Reject</Button>
                     </div>
                   )}
                   {filter === 'rejected' && (
-                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16 }}>
-                      <Button type="primary"  onClick={(e) => { e.stopPropagation(); handleDelete(post._id); }} style={{ backgroundColor: 'red', color: 'white' }}>Delete</Button>
+                    <div className="flex justify-center mt-4">
+                      <Button type="primary" onClick={(e) => { e.stopPropagation(); handleDelete(post._id); }} className="bg-red-500 text-white">Delete</Button>
                     </div>
                   )}
                 </Card>
