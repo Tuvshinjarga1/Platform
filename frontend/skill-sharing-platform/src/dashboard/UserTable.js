@@ -41,7 +41,7 @@ const UserTable = () => {
           return;
         }
 
-        const response = await axios.get('https://platform-backend-zxgy.onrender.com/api/backoffice/authors', {
+        const response = await axios.get('http://localhost:5000/api/backoffice/authors', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -75,22 +75,26 @@ const UserTable = () => {
       title: 'Username',
       dataIndex: 'username',
       key: 'username',
+      responsive: ['md'],
     },
     {
       title: 'Email',
       dataIndex: 'email',
       key: 'email',
+      responsive: ['md'],
     },
     {
       title: 'Reputation',
       dataIndex: 'reputation',
       key: 'reputation',
+      responsive: ['md'],
     },
     {
       title: 'Salary',
       dataIndex: 'salary',
       key: 'salary',
       render: (text) => `${text}₮`,
+      responsive: ['md'],
     },
   ];
 
@@ -124,6 +128,7 @@ const UserTable = () => {
           dataSource={currentUsers}
           pagination={false}
           rowKey="_id"
+          scroll={{ x: 800 }}
         />
         <Pagination
           current={currentPage}
