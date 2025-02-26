@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Col, Row, Statistic, Typography } from 'antd';
+import { Card, Col, Row, Statistic, Typography, Grid } from 'antd';
 import ProLayout, { PageContainer } from '@ant-design/pro-layout';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import { LogoutOutlined, DashboardOutlined, UserOutlined, FileTextOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
@@ -7,10 +7,13 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 
+const { useBreakpoint } = Grid;
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 const Dashboard = () => {
-
+  const screens = useBreakpoint();
+  const navigate = useNavigate();
+  
   const handleSignOut = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
@@ -26,21 +29,18 @@ const Dashboard = () => {
     pieChartData: [],
     barChartData: [],
   });
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
-
         if (!token) {
           alert('Unauthorized access. Please log in.');
           navigate('/');
           return;
         }
-
+        
         const decodedToken = jwtDecode(token);
-
         if (!decodedToken.role || decodedToken.role !== 'admin') {
           alert('You are not authorized to access this page.');
           navigate('/');
@@ -48,15 +48,11 @@ const Dashboard = () => {
         }
 
         const usersResponse = await axios.get('http://localhost:5000/api/backoffice/authors', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         const postsResponse = await axios.get('http://localhost:5000/api/posts', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         const totalUsers = usersResponse.data.length;
@@ -92,7 +88,6 @@ const Dashboard = () => {
         alert('Failed to fetch dashboard data. Please try again later.');
       }
     };
-
     fetchData();
   }, [navigate]);
 
@@ -101,9 +96,7 @@ const Dashboard = () => {
       title="Skill Sharing Platform"
       logo="https://fibo.edu.mn/assets/images/fibo-edu-logo.png"
       menuItemRender={(item, dom) => (
-        <a onClick={item.action ? item.action : () => navigate(item.path)}>
-          {dom}
-        </a>
+        <a onClick={item.action ? item.action : () => navigate(item.path)}>{dom}</a>
       )}
       menuDataRender={() => [
         { path: '/dashboard', name: 'Dashboard', icon: <DashboardOutlined /> },
@@ -117,42 +110,19 @@ const Dashboard = () => {
       <PageContainer>
         <Typography.Title level={4}>Тавтай морил {localStorage.getItem('username')} 👋</Typography.Title>
         <Row gutter={[16, 16]}>
-          <Col xs={24} sm={12} md={6}>
-            <Card>
-              <Statistic title="Нийт хэрэглэгч" value={dashboardData.totalUsers} />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} md={6}>
-            <Card>
-              <Statistic title="Нийт пост" value={dashboardData.totalPosts} />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} md={6}>
-            <Card>
-              <Statistic title="Нийт like" value={dashboardData.totalLikes} />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} md={6}>
-            <Card>
-              <Statistic title="Нийт Comments" value={dashboardData.totalComments} />
-            </Card>
-          </Col>
+          {[['Нийт хэрэглэгч', dashboardData.totalUsers], ['Нийт пост', dashboardData.totalPosts],
+            ['Нийт like', dashboardData.totalLikes], ['Нийт Comments', dashboardData.totalComments]].map(([title, value], index) => (
+            <Col xs={24} sm={12} md={6} key={index}>
+              <Card><Statistic title={title} value={value} /></Card>
+            </Col>
+          ))}
         </Row>
         <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
           <Col xs={24} md={12}>
             <Card title="ПОСТ АНГИЛАЛУУД">
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={screens.xs ? 250 : 300}>
                 <PieChart>
-                  <Pie
-                    data={dashboardData.pieChartData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#8884d8"
-                    label
-                  >
+                  <Pie data={dashboardData.pieChartData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
                     {dashboardData.pieChartData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
@@ -165,7 +135,7 @@ const Dashboard = () => {
           </Col>
           <Col xs={24} md={12}>
             <Card title="Постуудын статус">
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={screens.xs ? 250 : 300}>
                 <BarChart data={dashboardData.barChartData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
