@@ -1,10 +1,13 @@
 import React from 'react';
-import { Layout, Badge, Button } from 'antd';
+import { Layout, Badge, Button, Grid } from 'antd';
 import { SearchOutlined, BellOutlined, UserOutlined } from '@ant-design/icons';
 
 const { Header } = Layout;
+const { useBreakpoint } = Grid;
 
 const TopBar = () => {
+  const screens = useBreakpoint();
+
   return (
     <Header
       style={{
@@ -13,15 +16,17 @@ const TopBar = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '0 20px',
+        padding: screens.xs ? '0 10px' : '0 20px',
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
       }}
     >
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1, display: screens.xs ? 'none' : 'block' }}>
         <Button type="text" icon={<SearchOutlined />} />
       </div>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <Button type="text" icon={<BellOutlined />} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: screens.xs ? '5px' : '10px' }}>
+        <Badge count={5}>
+          <Button type="text" icon={<BellOutlined />} />
+        </Badge>
         <Button type="text" icon={<UserOutlined />} />
       </div>
     </Header>
