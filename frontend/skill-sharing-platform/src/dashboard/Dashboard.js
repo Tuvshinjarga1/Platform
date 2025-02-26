@@ -47,13 +47,13 @@ const Dashboard = () => {
           return;
         }
 
-        const usersResponse = await axios.get('https://platform-backend-zxgy.onrender.com/api/backoffice/authors', {
+        const usersResponse = await axios.get('http://localhost:5000/api/backoffice/authors', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        const postsResponse = await axios.get('https://platform-backend-zxgy.onrender.com/api/posts', {
+        const postsResponse = await axios.get('http://localhost:5000/api/posts', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -116,30 +116,30 @@ const Dashboard = () => {
     >
       <PageContainer>
         <Typography.Title level={4}>Тавтай морил {localStorage.getItem('username')} 👋</Typography.Title>
-        <Row gutter={16}>
-          <Col span={6}>
+        <Row gutter={[16, 16]}>
+          <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic title="Нийт хэрэглэгч" value={dashboardData.totalUsers} />
             </Card>
           </Col>
-          <Col span={6}>
+          <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic title="Нийт пост" value={dashboardData.totalPosts} />
             </Card>
           </Col>
-          <Col span={6}>
+          <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic title="Нийт like" value={dashboardData.totalLikes} />
             </Card>
           </Col>
-          <Col span={6}>
+          <Col xs={24} sm={12} md={6}>
             <Card>
               <Statistic title="Нийт Comments" value={dashboardData.totalComments} />
             </Card>
           </Col>
         </Row>
-        <Row gutter={16} style={{ marginTop: 24 }}>
-          <Col span={12}>
+        <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
+          <Col xs={24} md={12}>
             <Card title="ПОСТ АНГИЛАЛУУД">
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
@@ -163,7 +163,7 @@ const Dashboard = () => {
               </ResponsiveContainer>
             </Card>
           </Col>
-          <Col span={12}>
+          <Col xs={24} md={12}>
             <Card title="Постуудын статус">
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={dashboardData.barChartData}>
