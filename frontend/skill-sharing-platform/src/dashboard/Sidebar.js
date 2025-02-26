@@ -38,6 +38,16 @@ const Sidebar = () => {
           {dom}
         </a>
       )}
+      breakpoint="lg"
+      collapsedWidth="0"
+      onBreakpoint={(broken) => {
+        if (broken) {
+          // handle collapse
+        }
+      }}
+      onCollapse={(collapsed, type) => {
+        // handle collapse
+      }}
     />
   );
 };
