@@ -47,11 +47,11 @@ const Dashboard = () => {
           return;
         }
 
-        const usersResponse = await axios.get('http://localhost:5000/api/backoffice/authors', {
+        const usersResponse = await axios.get('https://platform-backend-zxgy.onrender.com/api/backoffice/authors', {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const postsResponse = await axios.get('http://localhost:5000/api/posts', {
+        const postsResponse = await axios.get('https://platform-backend-zxgy.onrender.com/api/posts', {
           headers: { Authorization: `Bearer ${token}` },
         });
 
