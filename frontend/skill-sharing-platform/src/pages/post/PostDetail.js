@@ -237,7 +237,7 @@ const PostDetail = () => {
   return post ? (
     <>
       <Header />
-      <div className="max-w-2xl mx-auto py-8 font-sans">
+      <div className="max-w-2xl mx-auto py-8 font-sans px-8">
         {/* Постын үндсэн мэдээлэл */}
         <p className="text-xs text-gray-500 font-sans">
           <strong>
