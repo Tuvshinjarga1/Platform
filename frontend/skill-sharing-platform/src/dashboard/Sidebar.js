@@ -1,8 +1,12 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import ProLayout from '@ant-design/pro-layout';
 import { LogoutOutlined, DashboardOutlined, UserOutlined, FileTextOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { Grid } from 'antd';
+
+const { useBreakpoint } = Grid;
 
 const Sidebar = () => {
+  const screens = useBreakpoint();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -39,7 +43,7 @@ const Sidebar = () => {
         </a>
       )}
       breakpoint="lg"
-      collapsedWidth="0"
+      collapsedWidth={screens.md ? 80 : 0}
       onBreakpoint={(broken) => {
         if (broken) {
           // handle collapse
