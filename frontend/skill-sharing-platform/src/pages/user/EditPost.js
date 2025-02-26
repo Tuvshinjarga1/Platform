@@ -47,7 +47,7 @@ const EditPost = () => {
   useEffect(() => {
     const fetchPost = async () => {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`https://platform-backend-zxgy.onrender.com/api/posts/${id}`, {
+      const response = await axios.get(`http://localhost:5000/api/posts/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -67,7 +67,7 @@ const EditPost = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `https://platform-backend-zxgy.onrender.com/api/posts/${id}`,
+        `http://localhost:5000/api/posts/${id}`,
         { title, description, category, readingTime },
         {
           headers: {
@@ -92,8 +92,8 @@ const EditPost = () => {
   return (
     <>
       <Header />
-      <form onSubmit={handleUpdate} style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <h2 style={{ marginBottom: '20px', textAlign: 'center' }}>Edit Post</h2>
+      <form onSubmit={handleUpdate} className="max-w-3xl mx-auto p-4 sm:p-8 bg-white shadow-md rounded-lg">
+        <h2 className="text-2xl font-bold mb-6 text-center">Edit Post</h2>
 
         {/* Title Input */}
         <input
@@ -102,14 +102,7 @@ const EditPost = () => {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
-          style={{
-            marginBottom: '20px',
-            padding: '10px',
-            width: '100%',
-            fontSize: '18px',
-            borderRadius: '8px',
-            border: '1px solid #ccc',
-          }}
+          className="mb-4 p-2 w-full text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
 
         {/* Category Input */}
@@ -117,14 +110,7 @@ const EditPost = () => {
           value={category}
           onChange={(e) => setCategory(e.target.value)}
           required
-          style={{
-            marginBottom: '20px',
-            padding: '10px',
-            width: '100%',
-            fontSize: '16px',
-            borderRadius: '8px',
-            border: '1px solid #ccc',
-          }}
+          className="mb-4 p-2 w-full text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
         >
           <option value="Technology">Technology</option>
           <option value="Health">Health</option>
@@ -141,26 +127,18 @@ const EditPost = () => {
           modules={modules}
           formats={formats}
           placeholder="Edit your post description here..."
-          style={{ height: '300px', marginBottom: '20px', backgroundColor: '#fff', borderRadius: '8px' }}
+          className="mb-4 bg-white rounded-lg"
         />
 
         {/* Reading Time Display */}
-        <p style={{ marginBottom: '20px', marginTop: '50px', fontSize: '14px', color: '#666' }}>
+        <p className="mb-4 text-sm text-gray-600">
           Estimated Reading Time: {readingTime} {readingTime === 1 ? 'minute' : 'minutes'}
         </p>
 
         {/* Submit Button */}
         <button
           type="submit"
-          style={{
-            padding: '12px 30px',
-            fontSize: '16px',
-            borderRadius: '8px',
-            border: 'none',
-            backgroundColor: '#007bff',
-            color: '#fff',
-            cursor: 'pointer',
-          }}
+          className="w-full py-2 text-lg font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition duration-200"
         >
           Update Post
         </button>
