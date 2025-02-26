@@ -36,7 +36,7 @@ const PendingPostDetail = () => {
           return;
         }
 
-        const response = await axios.get(`https://platform-backend-zxgy.onrender.com/api/request/${id}`, {
+        const response = await axios.get(`http://localhost:5000/api/request/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setPost(response.data);
@@ -53,7 +53,7 @@ const PendingPostDetail = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `https://platform-backend-zxgy.onrender.com/api/backoffice/posts/${id}/approve`,
+        `http://localhost:5000/api/backoffice/posts/${id}/approve`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -69,7 +69,7 @@ const PendingPostDetail = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.put(
-        `https://platform-backend-zxgy.onrender.com/api/backoffice/posts/${id}/reject`,
+        `http://localhost:5000/api/backoffice/posts/${id}/reject`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -84,7 +84,7 @@ const PendingPostDetail = () => {
   const handleDelete = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://platform-backend-zxgy.onrender.com/api/posts/${id}`, {
+      await axios.delete(`http://localhost:5000/api/posts/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert('Post deleted successfully!');
@@ -100,7 +100,7 @@ const PendingPostDetail = () => {
   };
 
   if (!post) {
-    return <Alert message="Loading..." type="info" showIcon style={{ textAlign: 'center', marginTop: 20 }} />;
+    return <Alert message="Loading..." type="info" showIcon className="text-center mt-5" />;
   }
 
   return (
@@ -122,12 +122,12 @@ const PendingPostDetail = () => {
       location={{ pathname: window.location.pathname }}
     >
       <PageContainer>
-        <Button type="primary" onClick={handleBack} style={{ marginBottom: 16 }}>
+        <Button type="primary" onClick={handleBack} className="mb-4">
           Back
         </Button>
         <Card
           hoverable
-          cover={post.image && <img alt={post.title} src={post.image} style={{ height: 300, objectFit: 'cover' }} />}
+          cover={post.image && <img alt={post.title} src={post.image} className="h-72 object-cover" />}
         >
         <Card.Meta
           title={post.title}
@@ -140,7 +140,7 @@ const PendingPostDetail = () => {
             </div>
           }
         />
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
+          <div className="flex justify-between mt-4">
             {post.status === 'pending' && (
               <>
                 <Button type="primary" onClick={handleApprove}>Approve</Button>
