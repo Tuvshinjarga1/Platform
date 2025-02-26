@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import LoadingButton from '@mui/lab/LoadingButton';
-import Link from '@mui/material/Link';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
 import { Icon } from '@iconify/react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -26,118 +20,74 @@ const Register = () => {
       });
       alert(response.data.message);
     } catch (error) {
-      if (error.response && error.response.data && error.response.data.message) {
-        alert(error.response.data.message);
-      } else {
-        alert('An error occurred');
-      }
+      alert(error.response?.data?.message || 'An error occurred');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Box
-      sx={{
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        background: 'linear-gradient(to right, #8ec5fc, #e0c3fc)',
-        padding: 2,
-      }}
-    >
-      <Box
-        sx={{
-          width: '100%',
-          maxWidth: 400,
-          backgroundColor: 'rgba(255, 255, 255, 0.9)',
-          borderRadius: 4,
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-          padding: 4,
-          textAlign: 'center',
-        }}
-      >
-        <Typography variant="h5" sx={{ mb: 2 }}>
-          Create an Account
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+    <div className="h-screen flex justify-center items-center bg-gradient-to-r from-blue-300 to-purple-300 p-4">
+      <div className="w-full max-w-md bg-white bg-opacity-90 rounded-lg shadow-lg p-6 text-center">
+        <h2 className="text-2xl font-bold mb-2">Create an Account</h2>
+        <p className="text-gray-600 text-sm mb-4">
           Already have an account?
-          <Link href="/login" variant="subtitle2" sx={{ ml: 0.5 }}>
-            Sign in
-          </Link>
-        </Typography>
-        <Box
-          component="form"
-          onSubmit={handleRegister}
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-        >
-          <TextField
-            fullWidth
+          <Link to="/login" className="text-blue-500 hover:underline ml-1">Sign in</Link>
+        </p>
+        <form onSubmit={handleRegister} className="flex flex-col space-y-4">
+          <input
+            type="text"
             name="username"
-            label="Username"
+            placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            sx={{ mb: 3 }}
+            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           />
-          <TextField
-            fullWidth
+          <input
+            type="email"
             name="email"
-            label="Email address"
+            placeholder="Email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            sx={{ mb: 3 }}
+            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           />
-          <TextField
-            fullWidth
+          <input
+            type="password"
             name="password"
-            label="Password"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            type="password"
-            sx={{ mb: 3 }}
+            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           />
-          <LoadingButton
-            fullWidth
-            size="large"
+          <button
             type="submit"
-            color="primary"
-            variant="contained"
-            loading={loading}
-            sx={{ mb: 3 }}
+            className={`w-full p-2 text-white font-semibold rounded-lg transition duration-200 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'}`}
+            disabled={loading}
           >
-            Register
-          </LoadingButton>
-        </Box>
-        <Divider sx={{ my: 3, '&::before, &::after': { borderTopStyle: 'dashed' } }}>
-          <Typography
-            variant="overline"
-            sx={{ color: 'text.secondary', fontWeight: 'fontWeightMedium' }}
-          >
-            OR
-          </Typography>
-        </Divider>
-        <Box display="flex" justifyContent="center" gap={1}>
-          <IconButton color="inherit">
-            <Icon icon="logos:google-icon" />
-          </IconButton>
-          <IconButton color="inherit">
-            <Icon icon="eva:github-fill" />
-          </IconButton>
-          <IconButton color="inherit">
-            <Icon icon="ri:twitter-x-fill" />
-          </IconButton>
-        </Box>
-      </Box>
-    </Box>
+            {loading ? 'Registering...' : 'Register'}
+          </button>
+        </form>
+        <div className="my-4 flex items-center">
+          <div className="flex-grow border-t border-gray-300"></div>
+          <span className="px-2 text-gray-500 text-sm">OR</span>
+          <div className="flex-grow border-t border-gray-300"></div>
+        </div>
+        <div className="flex justify-center space-x-4">
+          <button className="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
+            <Icon icon="logos:google-icon" className="text-2xl" />
+          </button>
+          <button className="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
+            <Icon icon="eva:github-fill" className="text-2xl" />
+          </button>
+          <button className="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
+            <Icon icon="ri:twitter-x-fill" className="text-2xl" />
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 

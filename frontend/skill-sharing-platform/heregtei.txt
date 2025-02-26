@@ -2,3 +2,5 @@
 
 
 set HTTPS=true&&set SSL_CRT_FILE=C:/Windows/System32/cert.crt&&set SSL_KEY_FILE=C:/Windows/System32/cert.key&&react-scripts start
+
+    "start": "HTTPS=true SSL_CRT_FILE=/app/certificates/cert.crt SSL_KEY_FILE=/app/certificates/cert.key react-scripts start",

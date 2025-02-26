@@ -1,23 +1,13 @@
 import React from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 
 const Footer = () => {
   return (
-    <Box
-      sx={{
-        width: '100%',
-        backgroundColor: '#f9fafc',
-        padding: 2,
-        position: 'relative',
-        bottom: 0,
-        textAlign: 'center',
-      }}
-    >
-      <Typography variant="body2" color="text.secondary">
+    <footer className="w-full bg-gray-100 text-center py-4 text-gray-600">
+    {/* <footer className="fixed bottom-0 left-0 w-full bg-gray-100 text-center py-4 text-gray-600"> */}
+      <p className="text-sm">
         © {new Date().getFullYear()} Skill Sharing Platform. All rights reserved. © Tuvshinjargal
-      </Typography>
-    </Box>
+      </p>
+    </footer>
   );
 };
 

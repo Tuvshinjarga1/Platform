@@ -1,122 +1,136 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import DOMPurify from 'dompurify'; // Import DOMPurify for sanitizing HTML
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import DOMPurify from "dompurify";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
+
+// Helper: Extract the first image and create a snippet of up to 12 words.
+// If the description has fewer than 12 words, show all of them.
+function extractFirstImageFromHTML(htmlString) {
+  // Sanitize the HTML string to avoid XSS
+  const cleanHTML = DOMPurify.sanitize(htmlString);
+
+  // Create a temporary DOM element
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = cleanHTML;
+
+  // Find and remove the first <img> tag
+  const imgEl = tempDiv.querySelector("img");
+  let imageUrl = "";
+  if (imgEl) {
+    imageUrl = imgEl.src;
+    imgEl.remove();
+  }
+
+  // Get plain text from the remaining HTML
+  const plainText = tempDiv.textContent || tempDiv.innerText || "";
+  const words = plainText.split(/\s+/).filter(Boolean);
+
+  // If there are more than 12 words, truncate and append an ellipsis
+  const snippet =
+    words.length > 12
+      ? words.slice(0, 12).join(" ") + "..."
+      : plainText.trim();
+
+  return { imageUrl, snippet };
+}
 
 const MainPosts = () => {
   const [posts, setPosts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [username, setUsername] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [username, setUsername] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/posts');
-
-        // Ensure that response.data is an array and filter only approved posts
+        const response = await axios.get("http://localhost:5000/api/posts");
         if (response.status === 200) {
-          const approvedPosts = response.data.filter((post) => post.status === 'approved');
+          // Filter approved posts only
+          const approvedPosts = response.data.filter(
+            (post) => post.status === "approved"
+          );
           setPosts(approvedPosts);
 
-          // Extract unique categories including 'All'
+          // Create a unique list of categories
           const uniqueCategories = [
-            'All',
-            ...new Set(approvedPosts.map((post) => post.category || 'Uncategorized')),
+            "All",
+            ...new Set(
+              approvedPosts.map((post) => post.category || "Uncategorized")
+            ),
           ];
           setCategories(uniqueCategories);
         }
       } catch (error) {
-        console.error('Error fetching posts:', error.message);
-        alert('Failed to fetch posts. Please try again later.');
+        console.error("Error fetching posts:", error.message);
       }
     };
 
     const fetchUsername = () => {
-      const storedUsername = localStorage.getItem('username');
-      if (storedUsername) {
-        setUsername(storedUsername);
-      }
+      const storedUsername = localStorage.getItem("username");
+      if (storedUsername) setUsername(storedUsername);
     };
 
     fetchPosts();
     fetchUsername();
   }, []);
 
+  // Example "like" handler (currently attached to "READ MORE" button)
   const handleLike = async (id) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await axios.put(
         `http://localhost:5000/api/posts/${id}/like`,
         {},
-        token
-          ? { headers: { Authorization: `Bearer ${token}` } }
-          : {}
+        token ? { headers: { Authorization: `Bearer ${token}` } } : {}
       );
-
-      // Update likes in the UI
-      const updatedLikes = response.data.likes;
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
-          post._id === id ? { ...post, likes: updatedLikes } : post
+          post._id === id ? { ...post, likes: response.data.likes } : post
         )
       );
     } catch (error) {
-      if (error.response && error.response.status === 400) {
-        alert('You have already liked this post!'); // Show message for duplicate likes
-      } else {
-        console.error('Error liking post:', error.message);
-        alert('Failed to like the post. Please try again.');
-      }
+      alert(
+        error.response?.status === 400
+          ? "You have already liked this post!"
+          : "Failed to like the post."
+      );
     }
   };
 
-  // Filter posts based on selected category
+  // Filter posts by selected category
   const filteredPosts =
-    selectedCategory === 'All'
+    selectedCategory === "All"
       ? posts
       : posts.filter((post) => post.category === selectedCategory);
 
   return (
     <>
       <Header />
-      <div style={{ maxWidth: '800px', margin: '0 auto', fontFamily: 'Arial, sans-serif' }}>
-
-        {/* Create Post Section */}
+      <div className="max-w-full mx-auto p-9 font-sans bg-gray-100">
+        <div className="max-w-screen-xl mx-auto p-9">
         {username && (
-          <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-            <h1>Сайн байна уу, {username}!</h1>
+          <div className="flex flex-col items-center mb-6 sm:flex-row sm:justify-between">
+            <h1 className="text-2xl font-bold text-gray-800">
+              Сайн байна уу, {username}
+            </h1>
             <button
-              onClick={() => navigate('/create-post')}
-              style={{
-                padding: '10px 20px',
-                fontSize: '16px',
-                borderRadius: '20px',
-                border: 'none',
-                backgroundColor: '#1877f2',
-                color: '#fff',
-                cursor: 'pointer',
-              }}
+              onClick={() => navigate("/create-post")}
+              className="mt-4 sm:mt-0 px-5 py-2 bg-purple-500 text-white rounded-full"
             >
               Шинэ нийтлэл оруулах
             </button>
           </div>
         )}
 
-        {/* Category Filter */}
-        <div style={{ marginBottom: '20px', textAlign: 'center' }}>
+        <div className="mb-6 text-center flex items-center">
+          <p className="text-base text-gray-800"> Ангилал</p>
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            style={{
-              padding: '10px',
-              fontSize: '16px',
-              borderRadius: '20px',
-              border: '1px solid #ccc',
-            }}
+            className="px-4 py-2 border rounded-full shadow-sm focus:ring focus:ring-blue-200 text-base"
           >
             {categories.map((category) => (
               <option key={category} value={category}>
@@ -126,100 +140,77 @@ const MainPosts = () => {
           </select>
         </div>
 
-        {/* Posts List */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredPosts.length === 0 ? (
-            <p style={{ textAlign: 'center', color: '#999' }}>No posts available in this category.</p>
+            <p className="text-center text-gray-500 col-span-full">
+              No posts available in this category.
+            </p>
           ) : (
-            filteredPosts.map((post) => (
-              <div
-                key={post._id}
-                style={{
-                  borderRadius: '10px',
-                  backgroundColor: '#fff',
-                  overflow: 'hidden',
-                  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
-                  border: '1px solid #ddd',
-                  padding: '15px',
-                }}
-              >
-                {post.image && (
-                  <div style={{ width: '100%', height: 'auto', marginBottom: '10px' }}>
-                    <img
-                      src={post.image}
-                      alt={post.title}
-                      style={{
-                        width: '100%',
-                        height: 'auto',
-                        borderRadius: '10px',
-                      }}
-                    />
-                  </div>
-                )}
-                <div>
-                  <p style={{ fontSize: '14px', color: post.category === 'Uncategorized' ? '#999' : '#1877f2', fontWeight: 'bold', marginBottom: '10px' }}>
-                    {post.category || 'Uncategorized'}
+            filteredPosts.map((post) => {
+              // Extract the first image and snippet (first 12 words)
+              const { imageUrl, snippet } = extractFirstImageFromHTML(
+                post.description
+              );
+
+              // Fallback to post.image if no image found in description
+              const cardImage =
+                imageUrl ||
+                post.image ||
+                "https://via.placeholder.com/800x400?text=No+Image";
+
+              return (
+                <div
+                  onClick={() => navigate(`/post/${post._id}?createdByUsername=${post.createdBy.username}&category=${post.category}`)}
+                  key={post._id}
+                  className="bg-white rounded-lg overflow-hidde flex flex-col hover:shadow-xl transition duration-300 px-2"
+                >
+                  {/* Top Image */}
+                  <img
+                    src={cardImage}
+                    alt={post.title}
+                    className="w-full aspect-video rounded-t object-cover"
+                  />
+
+                  {/* Category */}
+                  <p className="text-sm text-pink-500 font-semibold mt-4">
+                    Ангилал: {post.category || "Uncategorized"}
                   </p>
+
+                  {/* Title */}
                   <h3
-                    style={{
-                      fontSize: '18px',
-                      color: '#333',
-                      cursor: 'pointer',
-                      marginBottom: '10px',
-                    }}
-                    onClick={() => navigate(`/post/${post._id}`)}
+                    className="text-lg font-bold text-gray-800 cursor-pointer mt-2"
+                    onClick={() => navigate(`/post/${post._id}?createdByUsername=${post.createdBy.username}&category=${post.category}`)}
                   >
                     {post.title}
                   </h3>
-                  <div
-                    style={{ fontSize: '14px', color: '#555', marginBottom: '15px' }}
-                    dangerouslySetInnerHTML={{
-                      __html: DOMPurify.sanitize(post.description), // Sanitize and display HTML
-                    }}
-                  />
-                  <p style={{ fontSize: '12px', color: '#999', marginBottom: '5px' }}>
-                    {new Date(post.createdAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </p>
-                  <p style={{ fontSize: '12px', color: '#000000', marginBottom: '15px' }}>
-                    <strong>Нийтлэл бичсэн: {post.createdBy.username}</strong>
-                  </p>
-                  <button
-                    onClick={() => handleLike(post._id)}
-                    style={{
-                      padding: '10px 15px',
-                      fontSize: '14px',
-                      borderRadius: '20px',
-                      border: 'none',
-                      backgroundColor: '#1877f2',
-                      color: '#fff',
-                      cursor: 'pointer',
-                      marginRight: '10px',
-                    }}
-                  >
-                    Like ({post.likes.length})
-                  </button>
-                  <button
-                    onClick={() => navigate(`/post/${post._id}`)}
-                    style={{
-                      padding: '10px 15px',
-                      fontSize: '14px',
-                      borderRadius: '20px',
-                      border: 'none',
-                      backgroundColor: '#42b72a',
-                      color: '#fff',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    View Post
-                  </button>
+
+                  {/* Truncated Description (first 12 words or all if fewer) */}
+                  <div className="text-gray-600 text-sm mt-2 flex-grow">
+                    {snippet}
+                  </div>
+
+                  {/* Footer: "READ MORE" button & AWS logo */}
+                  <div className="m-2 flex justify-between items-center border-collapse border-t border-gray-200">
+                    <button
+                      onClick={(e) =>         
+                        {e.stopPropagation();
+                        navigate(`/post/${post._id}?createdByUsername=${post.createdBy.username}&category=${post.category}`);}
+                      }
+                      className="rounded-t-none text-black rounded-full text-xs font-bold"
+                    >
+                      READ MORE
+                    </button>
+                    <img
+                      src="https://blog.aws.mn/content/images/size/w150/2023/03/logo-white-background.png"
+                      alt="AWS logo"
+                      className="w-6 h-6"
+                    />
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
+        </div>
         </div>
       </div>
       <Footer />

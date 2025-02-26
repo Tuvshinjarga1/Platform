@@ -1,13 +1,4 @@
 import { useState } from 'react';
-import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
-import Divider from '@mui/material/Divider';
-import TextField from '@mui/material/TextField';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import LoadingButton from '@mui/lab/LoadingButton';
-import InputAdornment from '@mui/material/InputAdornment';
-
 import { Icon } from '@iconify/react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -29,14 +20,12 @@ export function Login() {
         password,
       });
 
-      // Save token and user data to localStorage
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('username', response.data.username);
       localStorage.setItem('role', response.data.role);
 
       alert(response.data.message);
 
-      // Navigate to dashboard if admin, otherwise to home
       if (response.data.role === 'admin') {
         navigate('/dashboard', { state: { username: response.data.username } });
       } else {
@@ -50,111 +39,67 @@ export function Login() {
   };
 
   return (
-    <Box
-      sx={{
-        height: '100vh', // Full height
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        background: 'linear-gradient(to right, #e0c3fc, #8ec5fc)', // Gradient background
-        padding: 2, // Padding for small devices
-      }}
-    >
-      <Box
-        sx={{
-          width: '100%',
-          maxWidth: 400, // Max width for the form
-          backgroundColor: 'rgba(255, 255, 255, 0.9)', // Semi-transparent background
-          borderRadius: 4,
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)', // Box shadow
-          padding: 4, // Padding for the form
-          textAlign: 'center',
-        }}
-      >
-        <Typography variant="h5" sx={{ mb: 2 }}>
-          Sign in
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+    <div className="h-screen flex justify-center items-center bg-gradient-to-r from-purple-300 to-blue-300 p-4">
+      <div className="w-full max-w-md bg-white bg-opacity-90 rounded-lg shadow-lg p-6 text-center">
+        <h2 className="text-2xl font-bold mb-2">Sign in</h2>
+        <p className="text-gray-600 text-sm mb-4">
           Don’t have an account?
-          <Link href="/register" variant="subtitle2" sx={{ ml: 0.5 }}>
-            Get started
-          </Link>
-        </Typography>
-        <Box
-          component="form"
-          onSubmit={handleLogin}
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-        >
-          <TextField
-            fullWidth
+          <a href="/register" className="text-blue-500 hover:underline ml-1">Get started</a>
+        </p>
+        <form onSubmit={handleLogin} className="flex flex-col space-y-4">
+          <input
+            type="email"
             name="email"
-            label="Email address"
+            placeholder="Email address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            sx={{ mb: 3 }}
+            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            required
           />
-          <TextField
-            fullWidth
-            name="password"
-            label="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            InputLabelProps={{ shrink: true }}
-            type={showPassword ? 'text' : 'password'}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                    <Icon icon={showPassword ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-            sx={{ mb: 3 }}
-          />
-          <LoadingButton
-            fullWidth
-            size="large"
+          <div className="relative w-full">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              name="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+            />
+            <button
+              type="button"
+              className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              <Icon icon={showPassword ? 'solar:eye-bold' : 'solar:eye-closed-bold'} className="text-xl" />
+            </button>
+          </div>
+          <button
             type="submit"
-            color="inherit"
-            variant="contained"
-            loading={loading}
-            sx={{
-              backgroundColor: '#000',
-              color: '#fff',
-              '&:hover': {
-                backgroundColor: '#333',
-              },
-              mb: 3,
-            }}
+            className={`w-full p-2 text-white font-semibold rounded-lg transition duration-200 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-black hover:bg-gray-800'}`}
+            disabled={loading}
           >
-            Sign in
-          </LoadingButton>
-        </Box>
-        <Divider sx={{ my: 3, '&::before, &::after': { borderTopStyle: 'dashed' } }}>
-          <Typography
-            variant="overline"
-            sx={{ color: 'text.secondary', fontWeight: 'fontWeightMedium' }}
-          >
-            OR
-          </Typography>
-        </Divider>
-        <Box display="flex" justifyContent="center" gap={1}>
-          <IconButton color="inherit">
-            <Icon icon="logos:google-icon" />
-          </IconButton>
-          <IconButton color="inherit">
-            <Icon icon="eva:github-fill" />
-          </IconButton>
-          <IconButton color="inherit">
-            <Icon icon="ri:twitter-x-fill" />
-          </IconButton>
-        </Box>
-      </Box>
-    </Box>
+            {loading ? 'Signing in...' : 'Sign in'}
+          </button>
+        </form>
+        <div className="my-4 flex items-center">
+          <div className="flex-grow border-t border-gray-300"></div>
+          <span className="px-2 text-gray-500 text-sm">OR</span>
+          <div className="flex-grow border-t border-gray-300"></div>
+        </div>
+        <div className="flex justify-center space-x-4">
+          <button className="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
+            <Icon icon="logos:google-icon" className="text-2xl" />
+          </button>
+          <button className="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
+            <Icon icon="eva:github-fill" className="text-2xl" />
+          </button>
+          <button className="p-2 bg-gray-100 rounded-full hover:bg-gray-200">
+            <Icon icon="ri:twitter-x-fill" className="text-2xl" />
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

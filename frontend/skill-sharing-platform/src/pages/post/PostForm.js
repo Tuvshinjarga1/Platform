@@ -1,183 +1,173 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css'; // Quill's stylesheet
-import Header from '../../components/Header';
-// import Footer from '../../components/Footer';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // Quill's stylesheet
+import Header from "../../components/Header";
 
+// Quill Editor-ийн toolbar тохиргоо
 const modules = {
   toolbar: [
-    [{ header: [1, 2, 3, false] }], // Header options
-    ['bold', 'italic', 'underline', 'strike'], // Formatting buttons
-    [{ color: [] }, { background: [] }], // Text color and background color
-    [{ align: [] }], // Text alignment
-    ['blockquote', 'code-block'], // Blockquote and code block
-    [{ list: 'ordered' }, { list: 'bullet' }], // Ordered and unordered lists
-    ['link', 'image'], // Insert link and image
-    ['clean'], // Remove formatting
+    [{ header: [1, 2, 3, false] }],
+    ["bold", "italic", "underline", "strike"],
+    [{ color: [] }, { background: [] }],
+    [{ align: [] }],
+    ["blockquote", "code-block"],
+    [{ list: "ordered" }, { list: "bullet" }],
+    ["link", "image"],
+    ["clean"],
   ],
 };
 
 const formats = [
-  'header',
-  'bold',
-  'italic',
-  'underline',
-  'strike',
-  'color',
-  'background',
-  'align',
-  'blockquote',
-  'code-block',
-  'list',
-  'bullet',
-  'link',
-  'image',
+  "header",
+  "bold",
+  "italic",
+  "underline",
+  "strike",
+  "color",
+  "background",
+  "align",
+  "blockquote",
+  "code-block",
+  "list",
+  "bullet",
+  "link",
+  "image",
 ];
 
 const PostForm = () => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState(''); // Quill editor state
-  const [category, setCategory] = useState(''); // Category state
-  const [readingTime, setReadingTime] = useState(0); // Reading time state
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [readingTime, setReadingTime] = useState(0);
   const navigate = useNavigate();
 
+  // Хэрэглэгч нэвтэрсэн эсэхийг шалгах
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
-      alert('Please login to access this page.');
-      navigate('/login'); // Redirect user to login page
+      alert("Энэ хуудсанд нэвтрэхийн тулд та эхлээд нэвтэрсэн байх шаардлагатай.");
+      navigate("/login");
     }
   }, [navigate]);
 
+  // Тайлбар өөрчлөгдөх бүрт унших хугацааг тооцоолох
   useEffect(() => {
-    // Calculate reading time whenever the description changes
-    const words = description.replace(/<[^>]+>/g, '').split(/\s+/).filter(Boolean).length; // Strip HTML and count words
-    setReadingTime(Math.ceil(words / 200)); // Average reading speed: 200 WPM
+    const words = description.replace(/<[^>]+>/g, "").split(/\s+/).filter(Boolean).length;
+    setReadingTime(Math.ceil(words / 200)); // 200 үг/минут орчимд уншина
   }, [description]);
 
+  // Форм илгээх
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
 
     try {
-      const postData = {
-        title,
-        description,
-        // image: imageUrl, // Pass the image URL
-        category,
-        readingTime,
-      };
-      console.log(postData);
-      const response = await axios.post('http://localhost:5000/api/posts', postData, {
+      const postData = { title, description, category, readingTime };
+      const response = await axios.post("http://localhost:5000/api/posts", postData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json', // Use JSON format
+          "Content-Type": "application/json",
         },
       });
 
       alert(response.data.message);
-      navigate('/post'); // Redirect to home after post creation
+      navigate("/post");
     } catch (error) {
-      alert(error.response?.data?.message || 'Failed to create post');
+      alert(error.response?.data?.message || "Нийтлэл үүсгэхэд алдаа гарлаа");
     }
   };
 
   return (
     <>
       <Header />
-      <form onSubmit={handleSubmit} style={{ maxWidth: '800px', margin: '0 auto' }}>
-        <h2 style={{ marginBottom: '20px', textAlign: 'center' }}>Create a Post</h2>
-        {/* Title Input */}
-        <input
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-          style={{
-            marginBottom: '20px',
-            padding: '10px',
-            width: '100%',
-            fontSize: '18px',
-            borderRadius: '8px',
-            border: '1px solid #ccc',
-          }}
-        />
+      <div className="max-w-7xl mx-auto p-6 bg-gray-100 rounded-lg shadow-md mt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Зүүн багана: Форм */}
+          <div className="bg-white p-6 rounded-md shadow-sm">
+            <h2 className="text-2xl font-semibold text-center text-blue-600 mb-6">
+              Нийтлэл үүсгэх
+            </h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Гарчиг оруулах талбар */}
+              <input
+                type="text"
+                placeholder="Гарчиг"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
 
-        {/* Category Input */}
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          required
-          style={{
-            marginBottom: '20px',
-            padding: '10px',
-            width: '100%',
-            fontSize: '16px',
-            borderRadius: '8px',
-            border: '1px solid #ccc',
-          }}
-        >
-          <option value="Technology">general</option>
-          <option value="Technology">Technology</option>
-          <option value="Health">Health</option>
-          <option value="Travel">Travel</option>
-          <option value="Education">Education</option>
-          <option value="Lifestyle">Lifestyle</option>
-        </select>
+              {/* Ангилал сонгох талбар */}
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                required
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+              >
+                <option value="">Ангилал сонгох</option>
+                <option value="General">General</option>
+                <option value="Technology">Technology</option>
+                <option value="Health">Health</option>
+                <option value="Travel">Travel</option>
+                <option value="Education">Education</option>
+                <option value="Lifestyle">Lifestyle</option>
+              </select>
 
-        {/* WYSIWYG Editor for Description */}
-        <ReactQuill
-          theme="snow"
-          value={description}
-          onChange={setDescription} // Save editor content to state
-          modules={modules}
-          formats={formats}
-          placeholder="Write your post description here..."
-          style={{ height: '300px', marginBottom: '20px', backgroundColor: '#fff', borderRadius: '8px' }}
-        />
+              {/* Quill Editor: Тайлбар */}
+              <ReactQuill
+                theme="snow"
+                value={description}
+                onChange={setDescription}
+                modules={modules}
+                formats={formats}
+                placeholder="Нийтлэлийнхээ агуулгыг энд бичнэ үү..."
+                className="bg-white rounded-md"
+              />
 
-        {/* Image URL Input */}
-        {/* <input
-          type="text"
-          placeholder="Image URL"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)} // Save image URL to state
-          style={{
-            marginBottom: '20px',
-            marginTop: '20px',
-            padding: '10px',
-            width: '100%',
-            fontSize: '16px',
-            borderRadius: '8px',
-            border: '1px solid #ccc',
-          }}
-        /> */}
+              {/* Унших хугацаа */}
+              <p className="text-gray-600 text-sm">
+                Тооцоолсон унших хугацаа: {readingTime}{" "}
+                {readingTime === 1 ? "минут" : "минут"}
+              </p>
 
-        {/* Reading Time Display */}
-        <p style={{ marginBottom: '20px', marginTop: '50px', fontSize: '14px', color: '#666' }}>
-          Estimated Reading Time: {readingTime} {readingTime === 1 ? 'minute' : 'minutes'}
-        </p>
+              {/* Илгээх товч */}
+              <button
+                type="submit"
+                className="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 transition duration-200"
+              >
+                Илгээх
+              </button>
+            </form>
+          </div>
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          style={{
-            padding: '12px 30px',
-            fontSize: '16px',
-            borderRadius: '8px',
-            border: 'none',
-            backgroundColor: '#007bff',
-            color: '#fff',
-            cursor: 'pointer',
-          }}
-        >
-          Submit
-        </button>
-      </form>
-      {/* <Footer /> */}
+          {/* Баруун багана: Урьдчилсан харагдац (Preview) */}
+          <div className="bg-white p-6 rounded-md shadow-inner">
+            <h2 className="text-xl font-bold mb-4 text-gray-700">Урьдчилсан харагдац</h2>
+            
+            {/* Урьдчилсан Гарчиг & Мэдээлэл */}
+            <div className="mb-4">
+              <h3 className="text-2xl font-semibold text-gray-900">
+                {title || "Таны нийтлэлийн гарчиг энд харагдана"}
+              </h3>
+              <p className="text-sm text-gray-500">
+                Ангилал: {category || "Сонгоогүй"} | {readingTime}{" "}
+                {readingTime === 1 ? "минут" : "минут"} унших
+              </p>
+            </div>
+
+            {/* Quill-ийн HTML-г шууд үзүүлэх */}
+            <div
+              className="prose max-w-none text-gray-800"
+              dangerouslySetInnerHTML={{
+                __html: description || "<p>Таны нийтлэлийн тайлбар энд харагдана</p>",
+              }}
+            />
+          </div>
+        </div>
+      </div>
     </>
   );
 };

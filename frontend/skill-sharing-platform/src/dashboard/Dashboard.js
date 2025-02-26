@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Typography, Card, CardContent } from '@mui/material';
-import Sidebar from './Sidebar';
-import TopBar from './TopBar';
+import { Card, Col, Row, Statistic, Typography } from 'antd';
+import ProLayout, { PageContainer } from '@ant-design/pro-layout';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
-import axios from 'axios';
+import { LogoutOutlined, DashboardOutlined, UserOutlined, FileTextOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
-const cardStyles = [
-  { background: 'linear-gradient(90deg, rgba(63,81,181,1) 0%, rgba(92,107,192,1) 100%)', color: '#fff' },
-  { background: 'linear-gradient(90deg, rgba(103,58,183,1) 0%, rgba(156,39,176,1) 100%)', color: '#fff' },
-  { background: 'linear-gradient(90deg, rgba(255,152,0,1) 0%, rgba(255,193,7,1) 100%)', color: '#fff' },
-  { background: 'linear-gradient(90deg, rgba(244,67,54,1) 0%, rgba(255,87,34,1) 100%)', color: '#fff' },
-];
-
 const Dashboard = () => {
+
+  const handleSignOut = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    localStorage.removeItem('role');
+    navigate('/post');
+  };
+
   const [dashboardData, setDashboardData] = useState({
     totalUsers: 0,
     totalPosts: 0,
@@ -96,90 +97,89 @@ const Dashboard = () => {
   }, [navigate]);
 
   return (
-    <Box display="flex">
-      <Sidebar />
-      <Box flex={1} display="flex" flexDirection="column" minHeight="100vh">
-        <TopBar />
-        <Box p={3}>
-          <Typography variant="h4" gutterBottom>
-            Тавтай морил {localStorage.getItem('username')} 👋 
-          </Typography>
-
-          <Grid container spacing={3} mt={2} mb={4}>
-            {[
-              { title: 'Нийт хэрэглэгч', value: dashboardData.totalUsers, change: '+5%' },
-              { title: 'Нийт пост', value: dashboardData.totalPosts, change: '+3%' },
-              { title: 'Нийт like', value: dashboardData.totalLikes, change: '+7%' },
-              { title: 'Нийт Comments', value: dashboardData.totalComments, change: '+4%' },
-            ].map((stat, index) => (
-              <Grid item xs={12} sm={6} md={3} key={index}>
-                <Card sx={{ ...cardStyles[index] }}>
-                  <CardContent>
-                    <Typography variant="subtitle1" sx={{ color: '#fff', opacity: 0.9 }}>
-                      {stat.title}
-                    </Typography>
-                    <Typography variant="h5" fontWeight="bold" sx={{ color: '#fff' }}>
-                      {stat.value}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#fff', opacity: 0.8 }}>
-                      {stat.change}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <Box sx={{ background: '#f9f9f9', borderRadius: 2, p: 3, boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
-                <Typography variant="h6" gutterBottom>
-                  ПОСТ АНГИЛАЛУУД
-                </Typography>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={dashboardData.pieChartData}
-                      dataKey="value"
-                      nameKey="name"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      fill="#8884d8"
-                      label
-                    >
-                      {dashboardData.pieChartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend verticalAlign="bottom" height={36} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </Box>
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <Box sx={{ background: '#f9f9f9', borderRadius: 2, p: 3, boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
-                <Typography variant="h6" gutterBottom>
-                  Постуудын статус
-                </Typography>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={dashboardData.barChartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend verticalAlign="top" height={36} />
-                    <Bar dataKey="Posts" fill="#0088FE" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </Box>
-            </Grid>
-          </Grid>
-        </Box>
-      </Box>
-    </Box>
+    <ProLayout
+      title="Skill Sharing Platform"
+      logo="https://fibo.edu.mn/assets/images/fibo-edu-logo.png"
+      menuItemRender={(item, dom) => (
+        <a onClick={item.action ? item.action : () => navigate(item.path)}>
+          {dom}
+        </a>
+      )}
+      menuDataRender={() => [
+        { path: '/dashboard', name: 'Dashboard', icon: <DashboardOutlined /> },
+        { path: '/user', name: 'User', icon: <UserOutlined /> },
+        { path: '/request', name: 'Post Requests', icon: <FileTextOutlined /> },
+        { path: '/reports', name: 'Post Reports', icon: <ExclamationCircleOutlined /> },
+        { path: '/logout', name: 'Sign out', icon: <LogoutOutlined />, action: handleSignOut },
+      ]}
+      location={{ pathname: window.location.pathname }}
+    >
+      <PageContainer>
+        <Typography.Title level={4}>Тавтай морил {localStorage.getItem('username')} 👋</Typography.Title>
+        <Row gutter={16}>
+          <Col span={6}>
+            <Card>
+              <Statistic title="Нийт хэрэглэгч" value={dashboardData.totalUsers} />
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card>
+              <Statistic title="Нийт пост" value={dashboardData.totalPosts} />
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card>
+              <Statistic title="Нийт like" value={dashboardData.totalLikes} />
+            </Card>
+          </Col>
+          <Col span={6}>
+            <Card>
+              <Statistic title="Нийт Comments" value={dashboardData.totalComments} />
+            </Card>
+          </Col>
+        </Row>
+        <Row gutter={16} style={{ marginTop: 24 }}>
+          <Col span={12}>
+            <Card title="ПОСТ АНГИЛАЛУУД">
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={dashboardData.pieChartData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    fill="#8884d8"
+                    label
+                  >
+                    {dashboardData.pieChartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend verticalAlign="bottom" height={36} />
+                </PieChart>
+              </ResponsiveContainer>
+            </Card>
+          </Col>
+          <Col span={12}>
+            <Card title="Постуудын статус">
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={dashboardData.barChartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend verticalAlign="top" height={36} />
+                  <Bar dataKey="Posts" fill="#0088FE" />
+                </BarChart>
+              </ResponsiveContainer>
+            </Card>
+          </Col>
+        </Row>
+      </PageContainer>
+    </ProLayout>
   );
 };
 

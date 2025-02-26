@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Sidebar from '../../dashboard/Sidebar';
-import TopBar from '../../dashboard/TopBar';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Alert from '@mui/material/Alert';
+import {jwtDecode} from 'jwt-decode';
 import DOMPurify from 'dompurify';
+import { Card, Button, Alert, Typography } from 'antd';
+import ProLayout, { PageContainer } from '@ant-design/pro-layout';
+import { LogoutOutlined, DashboardOutlined, UserOutlined, FileTextOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 
 const PendingPostDetail = () => {
-  const { id } = useParams(); // Get post ID from URL
+  const { id } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
+
+  const handleSignOut = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    localStorage.removeItem('role');
+    navigate('/post');
+  };
 
   useEffect(() => {
     const fetchPostDetails = async () => {
@@ -37,7 +39,6 @@ const PendingPostDetail = () => {
         const response = await axios.get(`http://localhost:5000/api/request/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log('Fetched Post:', response.data); // Debugging
         setPost(response.data);
       } catch (error) {
         console.error('Error fetching post details:', error.message);
@@ -99,81 +100,60 @@ const PendingPostDetail = () => {
   };
 
   if (!post) {
-    return <Alert severity="info" sx={{ textAlign: 'center', mt: 5 }}>Loading...</Alert>;
+    return <Alert message="Loading..." type="info" showIcon style={{ textAlign: 'center', marginTop: 20 }} />;
   }
 
   return (
-    <Box display="flex" bgcolor="#f9fafc">
-      <Sidebar />
-      <Box flex={1} display="relative" flexDirection="column" minHeight="100vh">
-        <TopBar />
-        <Box sx={{ maxWidth: '900px', margin: '0 auto', padding: 4, position: 'relative' }}>
-          <Button
-            variant="contained"
-            sx={{ position: 'static', top: 16, left: 16 }}
-            onClick={handleBack}
-          >
-            Back
-          </Button>
-          <Card sx={{ boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)', borderRadius: 3 }}>
-            {post.image && (
-              <Box
-                component="img"
-                src={post.image}
-                alt={post.title}
-                sx={{
-                  width: '100%',
-                  height: '300px',
-                  objectFit: 'cover',
-                  borderTopLeftRadius: 3,
-                  borderTopRightRadius: 3,
-                }}
-              />
-            )}
-            <CardContent>
-              <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#333' }}>
-                {post.title}
-              </Typography>
-              <Typography sx={{ marginTop: 2, color: '#555', lineHeight: 1.5 }}>
-                <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.description) }} />
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#666', marginTop: 2, fontStyle: 'italic' }}>
+    <ProLayout
+      title="Skill Sharing Platform"
+      logo="https://fibo.edu.mn/assets/images/fibo-edu-logo.png"
+      menuItemRender={(item, dom) => (
+        <a onClick={item.action ? item.action : () => navigate(item.path)}>
+          {dom}
+        </a>
+      )}
+      menuDataRender={() => [
+        { path: '/dashboard', name: 'Dashboard', icon: <DashboardOutlined /> },
+        { path: '/user', name: 'User', icon: <UserOutlined /> },
+        { path: '/request', name: 'Post Requests', icon: <FileTextOutlined /> },
+        { path: '/reports', name: 'Post Reports', icon: <ExclamationCircleOutlined /> },
+        { path: '/logout', name: 'Sign out', icon: <LogoutOutlined />, action: handleSignOut },
+      ]}
+      location={{ pathname: window.location.pathname }}
+    >
+      <PageContainer>
+        <Button type="primary" onClick={handleBack} style={{ marginBottom: 16 }}>
+          Back
+        </Button>
+        <Card
+          hoverable
+          cover={post.image && <img alt={post.title} src={post.image} style={{ height: 300, objectFit: 'cover' }} />}
+        >
+        <Card.Meta
+          title={post.title}
+          description={
+            <div>
+              <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.description) }} />
+              <Typography.Text type="secondary">
                 Created by: {post.createdBy?.username || 'Unknown'}
-              </Typography>
-              <Box display="flex" gap={2} marginTop={3}>
-                {post.status === 'pending' && (
-                  <>
-                    <Button
-                      variant="contained"
-                      sx={{ backgroundColor: '#28a745', '&:hover': { backgroundColor: '#218838' } }}
-                      onClick={handleApprove}
-                    >
-                      Approve
-                    </Button>
-                    <Button
-                      variant="contained"
-                      sx={{ backgroundColor: '#dc3545', '&:hover': { backgroundColor: '#c82333' } }}
-                      onClick={handleReject}
-                    >
-                      Reject
-                    </Button>
-                  </>
-                )}
-                {post.status === 'rejected' && (
-                  <Button
-                    variant="contained"
-                    sx={{ backgroundColor: '#dc3545', '&:hover': { backgroundColor: '#c82333' } }}
-                    onClick={handleDelete}
-                  >
-                    Delete
-                  </Button>
-                )}
-              </Box>
-            </CardContent>
-          </Card>
-        </Box>
-      </Box>
-    </Box>
+              </Typography.Text>
+            </div>
+          }
+        />
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16 }}>
+            {post.status === 'pending' && (
+              <>
+                <Button type="primary" onClick={handleApprove}>Approve</Button>
+                <Button type="danger" onClick={handleReject}>Reject</Button>
+              </>
+            )}
+            {post.status === 'rejected' && (
+              <Button type="danger" onClick={handleDelete}>Delete</Button>
+            )}
+          </div>
+        </Card>
+      </PageContainer>
+    </ProLayout>
   );
 };
 

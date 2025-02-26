@@ -1,41 +1,28 @@
 import React from 'react';
-import { Box, IconButton, Badge } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import UserIcon from '@mui/icons-material/AccountCircle';
+import { Layout, Badge, Button } from 'antd';
+import { SearchOutlined, BellOutlined, UserOutlined } from '@ant-design/icons';
+
+const { Header } = Layout;
+
 const TopBar = () => {
   return (
-    <Box
-      sx={{
+    <Header
+      style={{
         height: '60px',
         backgroundColor: '#ffffff',
-        borderBottom: '1px solid #e0e0e0',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'flex-end',
         padding: '0 20px',
-        gap: 2,
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
       }}
     >
-      {/* Search Icon */}
-      <IconButton>
-        <SearchIcon />
-      </IconButton>
+      <Button type="text" icon={<SearchOutlined />} />
 
-      {/* Notifications */}
-      <IconButton>
-        <Badge badgeContent={0} color="error">
-          <NotificationsIcon />
-        </Badge>
-      </IconButton>
+      <Button type="text" icon={<BellOutlined />} />
 
-      {/* Profile Avatar */}
-      <IconButton>
-        <Badge>
-          <UserIcon />
-        </Badge>
-      </IconButton>
-    </Box>
+      <Button type="text" icon={<UserOutlined />} />
+    </Header>
   );
 };
 

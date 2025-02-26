@@ -682,6 +682,19 @@ app.get('/api/backoffice/reports', authenticate, async (req, res) => {
   }
 });
 
+app.get('/api/related', async (req, res) => {
+  const { category } = req.query;
+  try {
+    const relatedPosts = await Post.find({ category, status: 'approved' })
+      .populate('createdBy', 'username')
+      .sort({ views: -1 })  // Sort by views in descending order
+      .limit(3);  // Limit to 4 posts
+    res.status(200).json(relatedPosts);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch related posts', error: error.message });
+  }
+});
+
 // Серверийг ажиллуулах
 const PORT = 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
