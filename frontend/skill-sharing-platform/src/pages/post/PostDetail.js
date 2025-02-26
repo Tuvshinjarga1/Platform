@@ -71,7 +71,7 @@ const PostDetail = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/posts/${id}`);
+        const response = await axios.get(`https://platform-backend-zxgy.onrender.com/api/posts/${id}`);
         setPost(response.data);
       } catch (error) {
         console.error("Error fetching post:", error.message);
@@ -83,7 +83,7 @@ const PostDetail = () => {
       const token = localStorage.getItem("token");
       if (token) {
         try {
-          const response = await axios.get("http://localhost:5000/api/user", {
+          const response = await axios.get("https://platform-backend-zxgy.onrender.com/api/user", {
             headers: { Authorization: `Bearer ${token}` },
           });
           setUsername(response.data.username);
@@ -109,7 +109,7 @@ const PostDetail = () => {
     const fetchRelatedPosts = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/related?category=${encodeURIComponent(category)}`
+          `https://platform-backend-zxgy.onrender.com/api/related?category=${encodeURIComponent(category)}`
         );
         setRelatedPosts(response.data);
       } catch (error) {
@@ -126,7 +126,7 @@ const PostDetail = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.put(
-        `http://localhost:5000/api/posts/${id}/like`,
+        `https://platform-backend-zxgy.onrender.com/api/posts/${id}/like`,
         {},
         token ? { headers: { Authorization: `Bearer ${token}` } } : {}
       );
@@ -148,7 +148,7 @@ const PostDetail = () => {
         user: username || ipAddress,
       };
       const response = await axios.post(
-        `http://localhost:5000/api/posts/${id}/comment`,
+        `https://platform-backend-zxgy.onrender.com/api/posts/${id}/comment`,
         commentData,
         token ? { headers: { Authorization: `Bearer ${token}` } } : {}
       );
@@ -172,7 +172,7 @@ const PostDetail = () => {
         user: username || ipAddress,
       };
       const response = await axios.post(
-        `http://localhost:5000/api/posts/${id}/comment/${parentCommentId}/reply`,
+        `https://platform-backend-zxgy.onrender.com/api/posts/${id}/comment/${parentCommentId}/reply`,
         replyData,
         token ? { headers: { Authorization: `Bearer ${token}` } } : {}
       );
@@ -199,7 +199,7 @@ const PostDetail = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        `http://localhost:5000/api/posts/${id}/report`,
+        `https://platform-backend-zxgy.onrender.com/api/posts/${id}/report`,
         { reason: reportReason },
         token ? { headers: { Authorization: `Bearer ${token}` } } : {}
       );
