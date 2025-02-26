@@ -65,7 +65,7 @@ const PostForm = () => {
 
     try {
       const postData = { title, description, category, readingTime };
-      const response = await axios.post("http://localhost:5000/api/posts", postData, {
+      const response = await axios.post("https://platform-backend-zxgy.onrender.com/api/posts", postData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
