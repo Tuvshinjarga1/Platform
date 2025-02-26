@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api/posts';
+const API_URL = 'https://platform-backend-zxgy.onrender.com/api/posts';
 
 export const fetchPosts = async () => {
   try {
